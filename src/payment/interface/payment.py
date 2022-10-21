@@ -1,15 +1,8 @@
-import logging
 from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import ContextTypes
 
 from src.payment.application.request_payment import request_payment
-
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logger = logging.getLogger()
 
 
 async def payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

@@ -1,4 +1,3 @@
-import logging
 from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import CallbackContext
@@ -16,12 +15,6 @@ from src.shared.infrastructure.cognitive.responses.payment import PAYMENTS, get_
 from src.shared.infrastructure.cognitive.responses.thanks import THANKS, get_thanks
 from src.device.application.request_wifi import request_wifi
 
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logger = logging.getLogger()
-
 
 async def message_handler(update: Update, context: CallbackContext) -> None:
     """this function messages at a specific time"""
@@ -32,6 +25,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 
     response = False
 
+    # Basic conversation
     if any(word in update.message.text.lower() for word in GREETINGS):
         await context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         await update.message.reply_text(get_greeting(name))
@@ -50,6 +44,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text(get_thanks(name))
         response = True
 
+    # Room functionality
     if any(word in update.message.text.lower() for word in WIFI):
         await update.message.reply_text(get_wifi(name))
         await context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
@@ -64,11 +59,13 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text(m)
         response = True
 
+    # Smart Alerts
     if any(word in update.message.text.lower() for word in NOTIFY):
         await context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         for m in request_alexa_notification(update.message.from_user, 'Aún no has pagado la luz'):
             await update.message.reply_text(m)
         response = True
 
+    # Without Response
     if not response:
         await update.message.reply_text(get_error_message(name))

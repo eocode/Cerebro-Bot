@@ -1,4 +1,5 @@
 from src.shared.application.query import call_sql
+from src.shared.infrastructure.cognitive.responses.account import get_unnaccess
 from src.shared.infrastructure.environments.variables import wifi_ssid, wifi_password
 from src.user.application import module_wifi
 from src.user.application.use_case.get_account import GetAccount
@@ -20,6 +21,6 @@ def request_wifi(user):
         response.append("Si no los registras serán bloqueados 📵 y perderás el acceso a la red")
         response.append("¡Disfruta de tú conexión! 😎")
     else:
-        response.append("Lo sentimos no tienes acceso al wifi")
+        return get_unnaccess()
 
     return response

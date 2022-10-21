@@ -1,3 +1,4 @@
+from src.shared.infrastructure.cognitive.responses.account import get_unnaccess
 from src.user.application.use_case.get_account import GetAccount
 
 
@@ -12,7 +13,6 @@ def request_help(user):
             f"garrafones de "
             f"agua")
     else:
-        response.append("Tú cuenta aún no ha sido activada\nPor favor consulta más tarde\n")
-        response.append("Puedes usar el comando /cuenta o /ayuda\n")
+        return get_unnaccess()
 
     return response

@@ -2,6 +2,7 @@ from sqlalchemy.sql.functions import count
 
 from src.shared.application.query import call_sql
 from src.shared.infrastructure.alexa_skills.send_proactive_message import send_proactive_message
+from src.shared.infrastructure.cognitive.responses.account import get_unnaccess
 from src.user.application.use_case.get_account import GetAccount
 
 
@@ -18,7 +19,6 @@ def request_alexa_notification(user, message):
         else:
             response.append("Error al enviar notificación")
     else:
-        response.append("Tú cuenta aún no ha sido activada\nPor favor consulta más tarde\n")
-        response.append("Puedes usar el comando /cuenta o /ayuda\n")
+        return get_unnaccess()
 
     return response

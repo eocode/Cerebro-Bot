@@ -45,6 +45,11 @@ A simple interaction for manage roomers in a home
 * DDD
 * POO
 
+## Requirements for numpy
+```shell
+sudo apt-get install libatlas-base-dev
+```
+
 ## How to install?
 
 ### Dependencies

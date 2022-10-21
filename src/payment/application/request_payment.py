@@ -1,9 +1,8 @@
-from logging import info
-
 from src.payment.application.use_case.create_invoice import CreateInvoice
 from src.payment.application.use_case.get_payment import GetPayment
 from src.payment.application.use_case.get_payment_deposit import GetPaymentDeposit
 from src.payment.application.use_case.get_payment_detail import GetPaymentDetail
+from src.shared.infrastructure.cognitive.responses.account import get_unnaccess
 from src.user.application.use_case.get_account import GetAccount
 
 
@@ -46,5 +45,7 @@ def request_payment(user):
         else:
             response.append(
                 f"Total del periodo: ${invoice.total} MXN\n")
+    else:
+        return get_unnaccess()
 
     return response

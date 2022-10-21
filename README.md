@@ -8,13 +8,13 @@
     A bot to manage the house and roomers
   </p>
   <p align="center">
-    <a href="https://github.com/eocode/cerebro/blob/master/LICENSE" target="__blank">
+    <a href="https://github.com/eocode/Cerebro-Bot/blob/master/LICENSE" target="__blank">
       	<img src="https://img.shields.io/badge/License-GPLV3-blue.svg"  alt="license badge"/>
     </a>
     <a href="https://github.com/ambv/black" target="__blank">
         <img src="https://img.shields.io/badge/code%20style-black-000000.svg" />
     </a>
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/eocode/cerebro">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/eocode/Cerebro-Bot">
   </p>
 </div>
 

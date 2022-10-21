@@ -13,12 +13,12 @@ def request_wifi(user):
     response = []
 
     if access:
-        response.append(f"SSID: {wifi_ssid()}\nPassword: {wifi_password()}")
-        response.append("Detalles de la red:\n40m² de alcance\n500mb Bajada\n50 mb Subida")
         response.append(
-            "Recuerda: Una vez ingreses con tus dispositivos, tendrás 24hrs para registrarlos en /dispositivos")
-        response.append("Si no los registras serán bloqueados y perderás el acceso a la red aún ingresando la clave")
-        response.append("Disfruta de tú conexión :D")
+            f"🌐 Detalles de la red:\n----------------------------------\nSSID: {wifi_ssid()}\nPassword: {wifi_password()}\n----------------------------------\n⏬500mb\n⏫50mb\n🌐Wifi6")
+        response.append(
+            "📣 ¡Recuerda! Una vez ingreses con tus dispositivos 📱, tendrás 24hrs ⏰ para registrarlos en /dispositivos")
+        response.append("Si no los registras serán bloqueados 📵 y perderás el acceso a la red")
+        response.append("¡Disfruta de tú conexión! 😎")
     else:
         response.append("Lo sentimos no tienes acceso al wifi")
 

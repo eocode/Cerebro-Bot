@@ -1,91 +1,111 @@
+from typing import Dict
+
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.constants import ChatAction
 from telegram.ext import ContextTypes, ConversationHandler
 
 from src.device.application.request_wifi import request_wifi
+from src.shared.infrastructure.validators.validate_mac import is_valid_mac_address
 
-DEVICES, PHOTO, LOCATION, BIO = range(4)
-OPTIONS = ["Mis dispositivos", "Agregar uno nuevo"]
+ACTIONABLE, ADD_MAC, SAVE_DEVICE = range(3)
+options = ["Mis dispositivos", "Agregar uno nuevo"]
+
+data = {}
 
 
-async def device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def device(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Starts the conversation and asks the user about their gender."""
-    reply_keyboard = [OPTIONS]
+
+    options = ["Mis dispositivos", "Agregar uno nuevo"]
+
+    reply_keyboard = [
+        options,
+    ]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
     await update.message.reply_text(
-        "En está sección podrás agregar y ver los dispositivos que has registrado.\n\n"
-        "Envia /cancelar para terminar la conversación.\n\n"
+        "🧾 Registra y gestiona tus dispositivos aquí.\n"
         "Por favor selecciona una opción para continuar:",
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder="Elije:"
-        ),
+        reply_markup=markup,
     )
 
-    return DEVICES
+    return ACTIONABLE
 
 
-async def devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Stores the selected gender and asks for a photo."""
-    user = update.message.from_user
-    message = update.message.text
-    if message == OPTIONS[0]:
+async def show_response(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Store info provided by user and ask for the next category."""
+    text = update.message.text
+
+    if text == options[0]:
         await update.message.reply_text(
-            f"Elegiste: {message}"
+            "A continuación te mostraremos tus dispositivos agregados",
+            reply_markup=ReplyKeyboardRemove()
         )
-        return PHOTO
-    if update.message.text == OPTIONS[1]:
+        return ConversationHandler.END
+    if text == options[1]:
+        types = ['Telefono', 'PC']
+        reply_keyboard = [
+            types,
+        ]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         await update.message.reply_text(
-            f"Elegiste: {message}"
+            "📱 Elige el tipo de dispositivo que agregarás.\n"
+            "La red se optimizará para el tipo de dispositivo que agregues",
+            reply_markup=markup,
         )
-        return PHOTO
+
+        return ADD_MAC
 
 
-async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Stores the photo and asks for a location."""
-    user = update.message.from_user
-    photo_file = await update.message.photo[-1].get_file()
-    await photo_file.download("user_photo.jpg")
+async def add_mac(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Store info provided by user and ask for the next category."""
+
+    type = update.message.text
+    data[update.message.chat_id] = type
+
+    print(type)
+
     await update.message.reply_text(
-        "Gorgeous! Now, send me your location please, or send /skip if you don't want to."
+        "Agregaremos un nuevo dispositivo",
+        reply_markup=ReplyKeyboardRemove()
+    )
+    await update.message.reply_text(
+        'Escribe la dirección MAC'
     )
 
-    return LOCATION
+    return SAVE_DEVICE
 
 
-async def skip_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Skips the photo and asks for a location."""
-    user = update.message.from_user
+async def save_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Store info provided by user and ask for the next category."""
+
+    mac = update.message.text
+    print(mac, data.get(update.message.chat_id))
+
+    if is_valid_mac_address(mac):
+        await update.message.reply_text(
+            'Dirección valida',
+            reply_markup=ReplyKeyboardRemove()
+        )
+    else:
+        await update.message.reply_text(
+            '❌ Dirección MAC invalida\nIntenta de nuevo en /dispositivos',
+            reply_markup=ReplyKeyboardRemove()
+        )
+
+    return ConversationHandler.END
+
+
+async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Display the gathered info and end the conversation."""
+    user_data = context.user_data
+    if "choice" in user_data:
+        del user_data["choice"]
+
     await update.message.reply_text(
-        "I bet you look great! Now, send me your location please, or send /skip."
+        f"I learned these facts about you: {user_data}Until next time!",
+        reply_markup=ReplyKeyboardRemove(),
     )
 
-    return LOCATION
-
-
-async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Stores the location and asks for some info about the user."""
-    user = update.message.from_user
-    user_location = update.message.location
-    await update.message.reply_text(
-        "Maybe I can visit you sometime! At last, tell me something about yourself."
-    )
-
-    return BIO
-
-
-async def skip_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Skips the location and asks for info about the user."""
-    user = update.message.from_user
-    await update.message.reply_text(
-        "You seem a bit paranoid! At last, tell me something about yourself."
-    )
-
-    return BIO
-
-
-async def bio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Stores the info about the user and ends the conversation."""
-    user = update.message.from_user
-    await update.message.reply_text("Thank you! I hope we can talk again some day.")
-
+    user_data.clear()
     return ConversationHandler.END
